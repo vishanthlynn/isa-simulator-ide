@@ -1,4 +1,8 @@
-# This file helps Railway detect Python
-# Actual requirements are in backend/requirements.txt
-# Railway should use backend/ as root directory
+# Railway Python detection file
+# Actual dependencies are in backend/requirements.txt
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+websockets==12.0
+pydantic==2.5.0
+python-multipart==0.0.6
 
