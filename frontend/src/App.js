@@ -105,7 +105,15 @@ function App() {
       }
     } catch (error) {
       console.error('Assemble error:', error);
-      setErrors([`Assemble error: ${error.message}`]);
+      if (error.message.includes('CORS') || error.message.includes('Failed to fetch') || error.code === 'ERR_NETWORK') {
+        setErrors([
+          'Backend server not available.',
+          'Please deploy the backend or run it locally.',
+          'See README.md for deployment instructions.'
+        ]);
+      } else {
+        setErrors([`Assemble error: ${error.message}`]);
+      }
     }
   };
 
@@ -176,6 +184,16 @@ function App() {
               {errors.map((err, i) => (
                 <div key={i} className="error">{err}</div>
               ))}
+            </div>
+          )}
+          {!API_URL.includes('localhost') && API_URL === 'http://localhost:8000' && (
+            <div className="errors" style={{backgroundColor: '#2d2d30', border: '1px solid #4ec9b0'}}>
+              <strong>⚠️ Backend Configuration Required</strong>
+              <div style={{marginTop: '8px', fontSize: '12px'}}>
+                The backend server needs to be deployed. Add environment variables in Vercel:
+                <br />• REACT_APP_API_URL = your backend URL
+                <br />• REACT_APP_WS_URL = your WebSocket URL (wss://)
+              </div>
             </div>
           )}
         </div>
