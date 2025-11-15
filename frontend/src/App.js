@@ -3,8 +3,8 @@ import Editor from '@monaco-editor/react';
 import axios from 'axios';
 import './App.css';
 
-const API_URL = 'http://localhost:8000';
-const WS_URL = 'ws://localhost:8000/ws/simulate';
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const WS_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:8000/ws/simulate';
 
 function App() {
   const [code, setCode] = useState(`; Simple addition example
