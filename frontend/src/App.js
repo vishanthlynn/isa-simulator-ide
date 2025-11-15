@@ -13,7 +13,6 @@ function App() {
         ADD  R3, R1, R2      ; R3 = R1 + R2
         HALT`);
   
-  const [binary, setBinary] = useState([]);
   const [errors, setErrors] = useState([]);
   const [state, setState] = useState(null);
   const [trace, setTrace] = useState([]);
@@ -76,7 +75,6 @@ function App() {
         source: code
       });
       
-      setBinary(response.data.binary);
       setErrors(response.data.errors);
       setTrace([]); // Clear trace
       
