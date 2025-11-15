@@ -1,0 +1,4 @@
+# This file helps Railway detect Python
+# Actual requirements are in backend/requirements.txt
+# Railway should use backend/ as root directory
+
