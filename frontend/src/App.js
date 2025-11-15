@@ -186,18 +186,6 @@ function App() {
               ))}
             </div>
           )}
-          {API_URL === 'http://localhost:8000' && (
-            <div className="errors" style={{backgroundColor: '#2d2d30', border: '1px solid #4ec9b0', marginTop: '10px'}}>
-              <strong>⚠️ Backend Configuration Required</strong>
-              <div style={{marginTop: '8px', fontSize: '12px', lineHeight: '1.6'}}>
-                The backend server needs to be deployed. See <strong>DEPLOY_BACKEND.md</strong> for instructions.
-                <br /><br />
-                After deploying, add environment variables in Vercel:
-                <br />• <code>REACT_APP_API_URL</code> = your backend URL
-                <br />• <code>REACT_APP_WS_URL</code> = your WebSocket URL (use <code>wss://</code> for secure)
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="right-pane">
