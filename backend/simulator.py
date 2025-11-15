@@ -65,8 +65,6 @@ class InstructionDecoder:
 
 
 class Simulator:
-    """Main simulator class implementing fetch-decode-execute cycle"""
-    
     def __init__(self):
         self.state = CPUState()
         self.decoder = InstructionDecoder()
@@ -114,54 +112,47 @@ class Simulator:
         self.state.flags['N'] = (result & 0x8000) != 0
     
     def execute_instruction(self, instruction: int) -> Optional[str]:
-        """Execute a single instruction, returns trace string"""
         opcode = (instruction >> 12) & 0xF
-        
         trace = f"PC={self.state.pc:04X} I={instruction:04X} "
         
-        if opcode == 0x0:  # NOP
+        if opcode == 0x0:
             trace += "NOP"
         
-        elif opcode == 0x1:  # ADD
+        elif opcode == 0x1:
             _, rd, rs1, rs2 = self.decoder.decode_r_type(instruction)
             result = self.state.registers[rs1] + self.state.registers[rs2]
-            result &= 0xFFFF  # 16-bit wrap
+            result &= 0xFFFF
             self.state.registers[rd] = result
             self.update_flags(result)
-            self.state.flags['C'] = (result < self.state.registers[rs1])  # Carry
+            self.state.flags['C'] = (result < self.state.registers[rs1])
             trace += f"ADD R{rd}, R{rs1}, R{rs2}"
-        
-        elif opcode == 0x2:  # SUB
+        elif opcode == 0x2:
             _, rd, rs1, rs2 = self.decoder.decode_r_type(instruction)
             result = self.state.registers[rs1] - self.state.registers[rs2]
-            result &= 0xFFFF  # 16-bit wrap
+            result &= 0xFFFF
             self.state.registers[rd] = result
             self.update_flags(result)
             trace += f"SUB R{rd}, R{rs1}, R{rs2}"
-        
-        elif opcode == 0x3:  # AND
+        elif opcode == 0x3:
             _, rd, rs1, rs2 = self.decoder.decode_r_type(instruction)
             result = self.state.registers[rs1] & self.state.registers[rs2]
             self.state.registers[rd] = result
             self.update_flags(result)
             trace += f"AND R{rd}, R{rs1}, R{rs2}"
-        
-        elif opcode == 0x4:  # OR
+        elif opcode == 0x4:
             _, rd, rs1, rs2 = self.decoder.decode_r_type(instruction)
             result = self.state.registers[rs1] | self.state.registers[rs2]
             self.state.registers[rd] = result
             self.update_flags(result)
             trace += f"OR R{rd}, R{rs1}, R{rs2}"
-        
-        elif opcode == 0x5:  # ADDI
+        elif opcode == 0x5:
             _, rd, rs, imm = self.decoder.decode_i_type(instruction)
             result = self.state.registers[rs] + imm
-            result &= 0xFFFF  # 16-bit wrap
+            result &= 0xFFFF
             self.state.registers[rd] = result
             self.update_flags(result)
             trace += f"ADDI R{rd}, R{rs}, {imm}"
-        
-        elif opcode == 0x6:  # LOAD
+        elif opcode == 0x6:
             _, rd, base, offset = self.decoder.decode_m_type(instruction)
             addr = (self.state.registers[base] + offset) & 0xFFFF
             if addr < len(self.state.memory) - 1:
@@ -169,8 +160,7 @@ class Simulator:
                 high = self.state.memory[addr + 1]
                 self.state.registers[rd] = low | (high << 8)
             trace += f"LOAD R{rd}, R{base}, {offset}"
-        
-        elif opcode == 0x7:  # STORE
+        elif opcode == 0x7:
             _, rd, base, offset = self.decoder.decode_m_type(instruction)
             addr = (self.state.registers[base] + offset) & 0xFFFF
             value = self.state.registers[rd]
@@ -178,14 +168,12 @@ class Simulator:
                 self.state.memory[addr] = value & 0xFF
                 self.state.memory[addr + 1] = (value >> 8) & 0xFF
             trace += f"STORE R{rd}, R{base}, {offset}"
-        
-        elif opcode == 0x8:  # JMP
+        elif opcode == 0x8:
             _, cond, offset = self.decoder.decode_j_type(instruction)
             self.state.pc += offset
             trace += f"JMP {offset:+d}"
-            return trace  # Early return, PC already updated
-        
-        elif opcode == 0x9:  # BRZ
+            return trace
+        elif opcode == 0x9:
             _, cond, offset = self.decoder.decode_j_type(instruction)
             if self.state.flags['Z']:
                 self.state.pc += offset
@@ -193,17 +181,15 @@ class Simulator:
             else:
                 trace += f"BRZ (not taken) {offset:+d}"
             if self.state.flags['Z']:
-                return trace  # Early return if branch taken
-        
-        elif opcode == 0xA:  # HALT
+                return trace
+        elif opcode == 0xA:
             self.state.halted = True
             trace += "HALT"
             return trace
-        
         else:
             trace += f"UNKNOWN({opcode})"
         
-        self.state.pc += 2  # Advance PC by 2 bytes (word size)
+        self.state.pc += 2
         return trace
     
     def step(self) -> Optional[str]:
